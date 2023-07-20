@@ -1,0 +1,52 @@
+import socket
+import threading
+import random
+
+# List of quotes
+quotes = [
+    "Hard times always lead to something great",
+    "Even miracles take a little time",
+    "Love Yourself",
+    "Never break your promises",
+    "Happiness is the best makeup",
+    "Don't lower your standard",
+    "Be happy with who you are",
+    "Don't seek happiness, create it"
+]
+
+def handle_client(client_socket):
+    # Retrieve a random quote from the list
+    quote = random.choice(quotes)
+
+    # Send the quote to the client
+    client_socket.send(quote.encode())
+
+    # Close the client socket
+    client_socket.close()
+
+def main():
+    server_address = "10.0.2.15"
+    server_port = 8888
+
+    # Create a TCP socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to the server address and port
+    server_socket.bind((server_address, server_port))
+
+    # Listen for incoming connections
+    server_socket.listen(5)
+
+    print("QOTD Server listening on port", server_port)
+
+    while True:
+        # Accept incoming connection
+        client_socket, client_address = server_socket.accept()
+        print("Connection from:", client_address)
+
+        # Create a new thread to handle the client request
+        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread.start()
+
+if __name__ == "__main__":
+    main()
